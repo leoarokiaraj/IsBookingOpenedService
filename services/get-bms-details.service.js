@@ -283,10 +283,10 @@ const getMovieTypes = async (urlPath) => {
                       if (movieMeta?.options != null) {
                         for (i = 0; i < movieMeta?.options?.length; i++) {
                           var formats = movieMeta.options[i].formats
-                          var movieTypObj = new Object()
-                          movieTypObj.lang = movieMeta.options[i].language
                           if (formats != null) {
                             for (j = 0; j < formats.length; j++) {
+                              var movieTypObj = new Object()
+                              movieTypObj.lang = movieMeta.options[i].language
                               movieTypObj.dimension = formats[j]?.dimension
                               movieTypObj.eventCode = formats[j]?.eventCode
                               movieTypeResp.push(movieTypObj)
