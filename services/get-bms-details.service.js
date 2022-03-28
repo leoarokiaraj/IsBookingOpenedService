@@ -270,10 +270,19 @@ const getMovieTypes = async (urlPath) => {
               var scriptTags = body[0]?.getElementsByTagName('script')
               var script = null
               if (scriptTags != null) {
-                script = scriptTags[3]
+
+                for (let index = 0; index < scriptTags.length; index++) {
+                  const element = scriptTags[index]?.innerHTML;
+                  if(element != null && 
+                      element.indexOf("window.__INITIAL_STATE__") !== -1)
+                  {
+                    script = element
+                    break;
+                  }
+                }               
               }
               if (script != null) {
-                var jsonScript = script?.innerHTML?.replace("window.__INITIAL_STATE__ =", "");
+                var jsonScript = script?.replace("window.__INITIAL_STATE__ = ", "");
                 if (script != null && IsJsonString(jsonScript) === true) {
                   var jsonData = JSON.parse(jsonScript)
                   pageCta = jsonData?.synopsisStore?.synopsisRender?.bannerWidget?.pageCta
