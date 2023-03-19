@@ -40,8 +40,6 @@ const getMoviesService = async () => {
         });
 
         res.on('close', () => {
-          console.log('Retrieved all data');
-          //console.log(JSON.parse(data));
           var movieJson = JSON.parse(data)
           for (i = 0; i < movieJson.listings.length; i++) {
             if (movieJson.listings[i] != null &&

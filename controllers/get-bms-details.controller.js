@@ -13,10 +13,7 @@ const getMoviesList = async (req, res, next) => {
     }).catch((err) => {
       resp = err;
     })
-    // other service call (or same service, different function can go here)
-    // i.e. - await generateBlogpostPreview()
 
-    //console.log(resp);
     switch (true) {
       case (resp.StatusCode === 200):
         res.status(200).send(resp)
@@ -57,10 +54,7 @@ const getBMSSearch = async (req, res, next) => {
         rest: 'Invalid query string'
       })
     }
-    // other service call (or same service, different function can go here)
-    // i.e. - await generateBlogpostPreview()
 
-    //console.log(resp);
     switch (true) {
       case (resp.StatusCode === 200):
         res.status(200).send(resp)
@@ -100,10 +94,6 @@ const getMovieTypes = async (req, res, next) => {
       })
     }
 
-    // other service call (or same service, different function can go here)
-    // i.e. - await generateBlogpostPreview()
-
-    //console.log(resp);
     switch (true) {
       case (resp.StatusCode === 200):
         res.status(200).send(resp)
@@ -142,10 +132,6 @@ const getCheckShowOpened = async (req, res, next) => {
       })
     }
 
-    // other service call (or same service, different function can go here)
-    // i.e. - await generateBlogpostPreview()
-
-    //console.log(resp);
     switch (true) {
       case (resp.StatusCode === 200):
         res.status(200).send(resp)
