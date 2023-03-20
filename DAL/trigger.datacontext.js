@@ -1,5 +1,5 @@
 const admin = require('firebase-admin');
-const serviceAccount = require('../secrets/admin.json');
+const serviceAccount = require(process.env.SECRETPATH);
 
 const getAllTriggers = async() => {
   try {
