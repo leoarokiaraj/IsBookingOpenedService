@@ -3,44 +3,26 @@ const https = require('https')
 const url = require('url')
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
-
+const axios = require("axios");
 
 const getMoviesService = async () => {
   try {
 
-    var getURL = url.parse(process.env.ENDPOINTURL + process.env.MOVIEPATH, true);
-    var protocol = (getURL.protocol == "http") ? http : https;
-
-    const options = {
-      path: getURL.pathname,
-      host: getURL.hostname,
-      port: getURL.port,
-      method: 'GET',
-      headers: {
-        "x-app-code": "WEB",
-        "x-bms-id": "1.202854711.1641737941928",
-        "x-dc-token": "aps",
-        "x-latitude": "13.056",
-        "x-longitude": "80.206",
-        "x-platform-code": "DESKTOP-WEB"
-      }
-    }
-
     return new Promise((resp, rejp) => {
-
-      const req = protocol.request(options, res => {
-        console.log(` getMoviesService statusCode: ${res.statusCode}`)
-
-
-        let data = '';
-        let moviesData = [];
-
-        res.on('data', (chunk) => {
-          data += chunk;
-        });
-
-        res.on('close', () => {
-          var movieJson = JSON.parse(data)
+      axios({
+        url: 'https://in.bookmyshow.com/api/explore/v1/discover/movies-chennai?region=CHEN',
+        method: 'GET',
+        headers: {
+          "x-app-code": "WEB",
+          "x-bms-id": "1.214180451.1679248115970",
+          "x-platform-code": "DESKTOP-WEB",
+          "user-agent": 'null'
+        },
+      }).then(function (res) {
+        console.log(res.data)
+          console.log(` getMoviesService statusCode: ${res.status}`)
+          let moviesData = [];
+          let movieJson = res.data
           for (i = 0; i < movieJson.listings.length; i++) {
             if (movieJson.listings[i] != null &&
               moviesData != null && moviesData.length < 10) {
@@ -58,20 +40,16 @@ const getMoviesService = async () => {
             }
           }
           resp({
-            StatusCode: res.statusCode,
-            Status: res.statusMessage,
+            StatusCode: res.status,
+            Status: res.statusText,
             data: moviesData
           })
+        })
+        .catch(function (error) {
+          console.log(error);
+          rejp({ error })
         });
-
-      })
-
-      req.on('error', error => {
-        console.error(error)
-        rejp({ error })
-      })
-
-      req.end()
+        
 
     });
 
@@ -80,52 +58,25 @@ const getMoviesService = async () => {
   }
 }
 
-
-
 const getBMSSearchService = async (typeID, searchText) => {
   try {
 
-
-    var getURL = url.parse(process.env.ENDPOINTURL + process.env.SEARCHPATH, true);
-    var protocol = (getURL.protocol == "http") ? require('http') : require('https');
-
-    var postData = JSON.stringify({
-      'isSubscribed': 'N',
-      'lat': '',
-      'lon': '',
-      'regionCode': 'CHEN',
-      'searchText': searchText,
-      'strRef': false,
-      'userEmail': ''
-    });
-
-    const options = {
-      path: getURL.pathname,
-      host: getURL.hostname,
-      port: getURL.port,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(postData)
-      }
-    }
-
     return new Promise((resp, rejp) => {
 
-      const req = protocol.request(options, res => {
-        console.log(` getBMSSearchService statusCode: ${res.statusCode}`)
-
-
-        let data = '';
-        let searchData = [];
-
-        res.on('data', (chunk) => {
-          data += chunk;
-        });
-
-        res.on('close', () => {
-          var serachJSON = JSON.parse(data)
-          for (i = 0; i < serachJSON?.hits?.length; i++) {
+      axios({
+        url: 'https://in.bookmyshow.com/quickbook-search.bms?r=CHEN&sz=15&f=json&t=rzPkrsC0lV&iss=N&q='+searchText,
+        method: 'GET',
+        headers: {
+          "x-app-code": "WEB",
+          "x-bms-id": "1.214180451.1679248115970",
+          "x-platform-code": "DESKTOP-WEB",
+          "user-agent": 'null'
+        },
+      }).then((res)=>{
+        var serachJSON = res.data
+        let searchData = []
+        for (i = 0; i < serachJSON?.hits?.length; i++) {
+          try {
             if (serachJSON?.hits[i] != null) {
               if (typeID == 1 && serachJSON.hits[i]?.TYPE_NAME.toLowerCase() === "movies") {
                 var serachObj = new Object()
@@ -142,24 +93,21 @@ const getBMSSearchService = async (typeID, searchText) => {
                 searchData.push(serachObj)
               }
             }
+          } catch (error) {
+           console.log(error) 
           }
-          resp({
-            StatusCode: res.statusCode,
-            Status: res.statusMessage,
-            searchData
-          })
-        });
+          
+        }
+        resp({
+          StatusCode: res.status,
+          Status: res.statusText,
+          searchData
+        })
 
-      })
-
-      req.write(postData);
-
-      req.on('error', error => {
+      }).catch((error) => {
         console.error(error)
         rejp({ error })
-      })
-
-      req.end()
+      });
 
     });
 
@@ -179,7 +127,13 @@ const getMovieTypeService = async (movieID) => {
         path: getURL.pathname,
         host: getURL.hostname,
         port: getURL.port,
-        method: 'GET'
+        method: 'GET',
+        headers: {
+          "x-app-code": "WEB",
+          "x-bms-id": "1.214180451.1679248115970",
+          "x-platform-code": "DESKTOP-WEB",
+          "user-agent": 'null'
+        },
       }
 
       const req = protocol.request(options, res => {
@@ -243,7 +197,13 @@ const getMovieTypes = async (urlPath) => {
         path: getURL.pathname,
         host: getURL.hostname,
         port: getURL.port,
-        method: 'GET'
+        method: 'GET',
+        headers: {
+          "x-app-code": "WEB",
+          "x-bms-id": "1.214180451.1679248115970",
+          "x-platform-code": "DESKTOP-WEB",
+          "user-agent": 'null'
+        },
       }
 
       const req = protocol.request(options, res => {
